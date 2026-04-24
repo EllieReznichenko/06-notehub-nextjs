@@ -1,7 +1,7 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { fetchNotes } from "@/lib/api";
 import { getQueryClient } from "@/lib/query-client";
-import NotesClient from "./notes.client";
+import NotesClient from "./Notes.client";
 
 interface NotesPageProps {
   searchParams: Promise<{
