@@ -14,14 +14,3 @@ export interface NewNoteData {
   content: string;
   tag: NoteTag;
 }
-
-export interface FetchNotesParams {
-  page: number;
-  perPage: number;
-  search?: string;
-}
-
-export interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
-}

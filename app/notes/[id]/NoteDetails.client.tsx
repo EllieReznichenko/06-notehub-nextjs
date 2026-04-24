@@ -3,43 +3,36 @@
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
+import Loader from "@/components/Loader/Loader";
+import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
 import css from "./NoteDetails.module.css";
 
 export default function NoteDetailsClient() {
-  const params = useParams();
-  const id = params.id as string;
+  const params = useParams<{ id: string }>();
+  const id = params.id;
 
   const {
     data: note,
     isLoading,
-    error,
+    isError,
   } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
     enabled: Boolean(id),
+    refetchOnMount: false,
   });
 
-  if (isLoading) {
-    return <p>Loading, please wait...</p>;
-  }
+  if (isLoading) return <Loader />;
 
-  if (error || !note) {
-    return <p>Something went wrong.</p>;
-  }
+  if (isError || !note) return <ErrorMessage />;
 
   return (
-    <div className={css.container}>
-      <div className={css.item}>
-        <div className={css.header}>
-          <h2>{note.title}</h2>
-        </div>
-
-        <p className={css.tag}>{note.tag}</p>
+    <main className={css.main}>
+      <div className={css.container}>
+        <h1 className={css.title}>{note.title}</h1>
         <p className={css.content}>{note.content}</p>
-        <p className={css.date}>
-          {new Date(note.createdAt).toLocaleDateString()}
-        </p>
+        <p className={css.tag}>{note.tag}</p>
       </div>
-    </div>
+    </main>
   );
 }

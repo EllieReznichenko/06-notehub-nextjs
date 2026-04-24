@@ -1,56 +1,46 @@
 import axios from "axios";
-import type {
-  FetchNotesParams,
-  FetchNotesResponse,
-  NewNoteData,
-  Note,
-} from "@/types/note";
+import type { Note, NewNoteData } from "@/types/note";
 
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pc3NmbGFzaDk2QGdtYWlsLmNvbSIsImlhdCI6MTc3NjYxOTg5MH0.f4_s5dFIRoos2VHwAoz31BH4exsiJvROB6TpxtfQwcQ";
+export interface FetchNotesParams {
+  page: number;
+  perPage: number;
+  search?: string;
+}
+
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
+
+const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
+
+console.log("TOKEN:", process.env.NEXT_PUBLIC_NOTEHUB_TOKEN);
 
 const api = axios.create({
   baseURL: "https://notehub-public.goit.study/api",
   headers: {
     Authorization: `Bearer ${token}`,
-    Accept: "application/json",
-    "Content-Type": "application/json",
   },
 });
 
-interface RawFetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
-}
+console.log("AUTH:", `Bearer ${process.env.NEXT_PUBLIC_NOTEHUB_TOKEN}`);
 
 export async function fetchNotes({
   page,
   perPage,
   search,
 }: FetchNotesParams): Promise<FetchNotesResponse> {
-  console.log("fetchNotes() entered", { page, perPage, search });
-
   const params: FetchNotesParams = { page, perPage };
 
   if (search?.trim()) {
     params.search = search;
   }
 
-  try {
-    const { data } = await api.get<RawFetchNotesResponse>("/notes", {
-      params,
-    });
+  const { data } = await api.get<FetchNotesResponse>("/notes", {
+    params,
+  });
 
-    console.log("fetchNotes success", data);
-
-    return {
-      notes: data.notes,
-      totalPages: data.totalPages,
-    };
-  } catch (error) {
-    console.log("fetchNotes error", error);
-    throw error;
-  }
+  return data;
 }
 
 export async function fetchNoteById(id: string): Promise<Note> {
